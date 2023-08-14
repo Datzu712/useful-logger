@@ -1,0 +1,43 @@
+# Archivos y carpetas generadas durante el desarrollo
+node_modules/
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+logs
+*.log
+*.swp
+.DS_Store
+
+# Archivos de desarrollo y configuración
+*.ts
+*.tsx
+*.map
+.eslintrc
+.jshintrc
+.editorconfig
+.npmrc
+.babelrc
+
+# Archivos de prueba y pruebas
+test/
+tests/
+__tests__/
+
+# Documentación y ejemplos
+docs/
+example/
+examples/
+*.md
+
+# Archivos de respaldo y temporales
+*~
+*.bak
+*.backup
+*.tmp
+
+# Archivos específicos de IDE
+.idea/
+.vscode/
+*.sublime-*
+*.idea
+*.iml

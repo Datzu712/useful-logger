@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+          "module": "CommonJS",
+          "moduleResolution": "node",
+          "declaration": true,
+          "sourceMap": false,
+          "emitDecoratorMetadata": true,
+          "experimentalDecorators": true,
+          "useUnknownInCatchVariables": false,
+          "removeComments": true,
+          "target": "ES2021",
+          "forceConsistentCasingInFileNames": true,
+          "esModuleInterop": true,
+          "strict": true,
+          "allowJs": false,
+          "skipLibCheck": true,
+      },
+      "exclude": ["node_modules"],
+  }
