@@ -1,19 +1,11 @@
 import { ConsoleLogger, ConsoleLoggerOptions } from './console-logger';
-import type { LogLevels, logMessage } from './interfaces';
-
-export interface abstractLogger {
-    debug: (message: logMessage, context?: string) => void;
-    error: (message: logMessage, context?: string) => void;
-    warn: (message: logMessage, context?: string) => void;
-    log: (message: logMessage, context?: string) => void;
-    verbose: (message: logMessage, context?: string) => void;
-}
+import type { AbstractLogger, LogLevels, logMessage } from './interfaces';
 
 const defaultLogger = new ConsoleLogger();
 
-export class Logger implements abstractLogger {
-    private static staticInstance?: abstractLogger;
-    protected localInstanceRef?: abstractLogger;
+export class Logger implements AbstractLogger {
+    private static staticInstance?: AbstractLogger;
+    protected localInstanceRef?: AbstractLogger;
     protected static logLevels: LogLevels[];
 
     constructor(
@@ -102,7 +94,7 @@ export class Logger implements abstractLogger {
         return this.localInstanceRef;
     }
 
-    static overrideLocalInstance(instance: ConsoleLogger | abstractLogger) {
+    static overrideLocalInstance(instance: ConsoleLogger | AbstractLogger) {
         Logger.staticInstance = instance;
     }
 }

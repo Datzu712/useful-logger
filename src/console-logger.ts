@@ -1,4 +1,4 @@
-import { red, magenta, yellow, cyan, green, reset as resetColor } from './constants';
+import { red, magenta, yellow, cyan, green, reset as resetColor, blue } from './constants';
 import { existsSync, mkdirSync, WriteStream, createWriteStream } from 'fs';
 
 import type { DeepRequired } from 'ts-essentials';
@@ -16,7 +16,7 @@ export interface ConsoleLoggerOptions {
     folderPath?: string;
     /**
      * Excepted output template. It will be used to format the output (log message).
-     * @default '{pid} {timestamp} - {level} {context} {message}'
+     * @default '{timestamp} {context} {level} {message}'
      */
     outputTemplate?: string;
     /**
@@ -37,13 +37,13 @@ export interface ConsoleLoggerOptions {
     /**
      * Allows the output in the console.
      */
-    allowConsole?: boolean;
+    allowConsole?: boolean | LogLevels[];
     /**
      * Default context.
      */
     context?: string;
     /**
-     * The number of the max length of the text. If the provided text isn't longer than it, the text will be padded with spaces to reach the "indent" length.
+     * Spaces to indent the output.
      */
     indents?: {
         [key in MessageLogExpressionsKey]?: number;
@@ -58,22 +58,23 @@ export class ConsoleLogger implements AbstractLogger {
     warn!: (message: any, ...optionalArguments: any[]) => void;
     verbose!: (message: any, ...optionalArguments: any[]) => void;
     log!: (message: any, ...optionalArguments: any[]) => void;
+    database!: (message: any, context?: string | undefined) => void;
 
     constructor(options?: ConsoleLoggerOptions) {
         this.options = {
-            outputTemplate: options?.outputTemplate || '{pid} {timestamp} - {level} {context} {message}',
+            outputTemplate: options?.outputTemplate || '{timestamp} {pid} {level} {message}',
             testing: options?.testing ?? false,
-            logLevels: options?.logLevels || defaultLogLevels,
-            allowWriteFiles: options?.folderPath && options?.allowWriteFiles ? options?.allowWriteFiles : false,
+            logLevels: options?.logLevels || ['error', 'warn', 'log', 'verbose'],
+            allowWriteFiles: options?.allowWriteFiles ?? true,
             allowConsole: options?.allowConsole ?? true,
-            context: options?.context || 'Server',
+            context: options?.context || 'null',
             folderPath: options?.folderPath,
             indents: {
                 timestamp: options?.indents?.timestamp ?? 0,
                 pid: options?.indents?.pid ?? 0,
-                level: options?.indents?.level ?? 7,
+                level: options?.indents?.level ?? 0,
                 message: options?.indents?.message ?? 0,
-                context: options?.indents?.context ?? 20,
+                context: options?.indents?.context ?? 0,
             },
         };
         for (const logLevel of defaultLogLevels) {
@@ -84,9 +85,19 @@ export class ConsoleLogger implements AbstractLogger {
     private defaultLogWriter(level: LogLevels, message: logMessage, context = this.options.context): void {
         if (!this.isLevelEnabled(level)) return;
 
-        if (this.options.allowConsole) {
+        if (
+            (Array.isArray(this.options.allowConsole) && this.options.allowConsole.includes(level)) ||
+            this.options.allowConsole === true
+        ) {
             const stdType = level === 'error' ? 'stderr' : 'stdout';
-            process[stdType].write(`${this.createMessage({ level, message, context, colorize: true })}\n`);
+            process[stdType].write(
+                `${this.createMessage({
+                    level,
+                    message,
+                    context,
+                    colorize: true,
+                })}\n`,
+            );
         }
         if (this.options.allowWriteFiles && this.options.folderPath) {
             this.write(this.createMessage({ level, message, context, colorize: false }), level);
@@ -132,7 +143,14 @@ export class ConsoleLogger implements AbstractLogger {
             .replaceAll(
                 '{message}',
                 `${
-                    typeof message === 'string' ? message : inspect(message, { colors: colorize, depth: null })
+                    typeof message === 'string'
+                        ? message
+                        : inspect(message, {
+                              colors: colorize,
+                              depth: null,
+                              maxArrayLength: null,
+                              maxStringLength: null,
+                          })
                 }${this.formatIndentationText(this.options.indents.message, message)}`,
             )
             .replaceAll(
@@ -154,6 +172,7 @@ export class ConsoleLogger implements AbstractLogger {
         const indentationLength = Math.max(0, indent - textLength);
         return ' '.repeat(indentationLength);
     };
+
     /**
      * Write the log.
      * @param { string } message - The message to log.
@@ -194,8 +213,8 @@ export class ConsoleLogger implements AbstractLogger {
                 this.options.testing
                     ? `${fileType == 'error' ? '.error' : ''}.test`
                     : fileType === 'log'
-                    ? ''
-                    : `-${fileType}`
+                      ? ''
+                      : `-${fileType}`
             }.log`,
             {
                 flags: 'a',
@@ -213,22 +232,22 @@ export class ConsoleLogger implements AbstractLogger {
     }
 
     public getPid(): string {
-        return `[${this.options.context} - ${process.pid}]`;
+        return `[${this.options.context ?? 'Application'} - ${process.pid}]`;
     }
 
-    public formatLevel(level: LogLevels): string {
-        const color =
-            level === 'error'
-                ? red
-                : level === 'warn'
-                ? yellow
-                : level === 'debug'
-                ? magenta
-                : level === 'verbose'
-                ? magenta
-                : cyan;
+    private formatLevel = (level: LogLevels): string => {
+        const levelColors = {
+            error: red,
+            warn: yellow,
+            debug: magenta,
+            verbose: magenta,
+            log: cyan,
+            database: blue,
+        };
+
+        const color = levelColors[level] || cyan;
         return `${color}${level.toUpperCase()}${resetColor}`;
-    }
+    };
 
     public getTimestamp(fullDate = false): string {
         const localeStringOptions: Intl.DateTimeFormatOptions = {
@@ -240,13 +259,5 @@ export class ConsoleLogger implements AbstractLogger {
             month: '2-digit',
         };
         return new Date(Date.now()).toLocaleString(undefined, localeStringOptions);
-    }
-
-    public setLogLevels(levels: LogLevels[]) {
-        this.options.logLevels = levels;
-    }
-
-    public setContext(context: string) {
-        this.options.context = context;
     }
 }
