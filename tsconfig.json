@@ -14,7 +14,8 @@
           "strict": true,
           "allowJs": false,
           "skipLibCheck": true,
+          "outDir": "dist",
       },
       "exclude": ["node_modules"],
-      "include": ["sample/**/*.ts"]
+      "include": ["sample/**/*.ts", "src/**/*.ts"]
   }

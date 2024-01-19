@@ -5,22 +5,28 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Datzu712/logger.git"
+    "url": "git+https://github.com/Datzu712/useful-logger"
   },
   "keywords": [
     "logger",
-    "log"
+    "log",
+    "logging",
+    "node",
+    "files",
+    "loglevel",
+    "tools"
   ],
   "author": "Datzu712",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Datzu712/logger/issues"
+    "url": "https://github.com/Datzu712/useful-logger/issues"
   },
-  "homepage": "https://github.com/Datzu712/logger#readme",
+  "homepage": "https://github.com/Datzu712/useful-logger#readme",
   "devDependencies": {
     "@types/node": "^20.11.5",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
