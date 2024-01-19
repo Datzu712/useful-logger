@@ -47,7 +47,7 @@ export class Logger implements AbstractLogger {
      * Write an 'verbose' message.
      */
     public verbose(message: logMessage, context = this.defaultContext) {
-        this.localInstanceRef?.verbose(message, context);
+        this.localInstanceRef?.verbose!(message, context);
     }
     /**
      * Write an 'warn' message.
@@ -81,7 +81,7 @@ export class Logger implements AbstractLogger {
      * Write an 'verbose' message.
      */
     static verbose(message: logMessage, context?: string) {
-        this.staticInstance?.verbose(message, context);
+        this.staticInstance?.verbose!(message, context);
     }
     /**
      * Write an 'warn' message.

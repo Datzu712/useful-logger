@@ -5,6 +5,6 @@ export interface AbstractLogger {
     error: (message: logMessage, context?: string) => void;
     warn: (message: logMessage, context?: string) => void;
     log: (message: logMessage, context?: string) => void;
-    verbose: (message: logMessage, context?: string) => void;
+    verbose?: (message: logMessage, context?: string) => void;
     // fatal: (message: logMessage, .context?: string) => void;
 }
