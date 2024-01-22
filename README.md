@@ -1,8 +1,6 @@
 # useful-logger
 
-La clase `Logger` es una implementación de un logger que puede ser utilizado en toda tu aplicación.
-
-# Basic usage
+[![npm version](https://badge.fury.io/js/useful-logger.svg)](https://badge.fury.io/js/useful-logger)
 
 ## Options
 
