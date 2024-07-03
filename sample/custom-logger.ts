@@ -1,4 +1,4 @@
-import { type AbstractLogger, Logger } from "../src";
+import { Logger } from '../src';
 
 // note that console doesn't have the method verbose
 Logger.overrideLocalInstance(console);
