@@ -3,9 +3,9 @@ import type { AbstractLogger, LogLevels, logMessage } from './interfaces';
 
 const defaultLogger = new ConsoleLogger();
 
-export class Logger implements AbstractLogger {
+export class Logger<T extends AbstractLogger> implements AbstractLogger {
     private static staticInstance?: AbstractLogger;
-    protected localInstanceRef?: AbstractLogger;
+    protected localInstanceRef?: T;
     protected static logLevels: LogLevels[];
 
     constructor(
@@ -20,8 +20,7 @@ export class Logger implements AbstractLogger {
         } else if (instanceOptions && !Logger.staticInstance) {
             Logger.staticInstance = new ConsoleLogger({ ...instanceOptions, context: defaultContext });
         }
-        // Local instance for this instance of the logger.
-        this.localInstanceRef = Logger.staticInstance;
+        this.localInstanceRef = Logger.staticInstance as T;
     }
 
     // Public methods

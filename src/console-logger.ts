@@ -1,5 +1,6 @@
-import { red, magenta, yellow, cyan, green, reset as resetColor, blue } from './constants';
-import { existsSync, mkdirSync, WriteStream, createWriteStream } from 'fs';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { blue, cyan, green, magenta, red, reset as resetColor, yellow } from './constants';
+import { createWriteStream, existsSync, mkdirSync, WriteStream } from 'fs';
 
 import type { DeepRequired } from 'ts-essentials';
 import { inspect } from 'util';
@@ -52,6 +53,7 @@ export interface ConsoleLoggerOptions {
 
 export class ConsoleLogger implements AbstractLogger {
     protected options: Omit<DeepRequired<ConsoleLoggerOptions>, 'folderPath'> & { folderPath?: string };
+    private events: Map<string, (level: LogLevels, message: logMessage, context: string) => void | string> = new Map();
 
     debug!: (message: any, ...optionalArguments: any[]) => void;
     error!: (message: any, ...optionalArguments: any[]) => void;
@@ -81,9 +83,12 @@ export class ConsoleLogger implements AbstractLogger {
             this[logLevel] = this.defaultLogWriter.bind(this, logLevel);
         }
     }
-
     private defaultLogWriter(level: LogLevels, message: logMessage, context = this.options.context): void {
         if (!this.isLevelEnabled(level)) return;
+
+        if (this.events.has(level)) {
+            message = this.events.get(level)?.(level, message, context) || message;
+        }
 
         if (
             (Array.isArray(this.options.allowConsole) && this.options.allowConsole.includes(level)) ||
@@ -221,7 +226,6 @@ export class ConsoleLogger implements AbstractLogger {
             },
         );
     }
-
     /**
      * Checks if the given log level is enabled (options.logLevels).
      * @param { LogLevels } level - The log level to check.
@@ -230,11 +234,9 @@ export class ConsoleLogger implements AbstractLogger {
     public isLevelEnabled(level: LogLevels): boolean {
         return this.options.logLevels.includes(level);
     }
-
     public getPid(): string {
         return `[${this.options.context ?? 'Application'} - ${process.pid}]`;
     }
-
     private formatLevel = (level: LogLevels): string => {
         const levelColors = {
             error: red,
@@ -248,7 +250,6 @@ export class ConsoleLogger implements AbstractLogger {
         const color = levelColors[level] || cyan;
         return `${color}${level.toUpperCase()}${resetColor}`;
     };
-
     public getTimestamp(fullDate = false): string {
         const localeStringOptions: Intl.DateTimeFormatOptions = {
             year: 'numeric',
@@ -259,5 +260,13 @@ export class ConsoleLogger implements AbstractLogger {
             month: '2-digit',
         };
         return new Date(Date.now()).toLocaleString(undefined, localeStringOptions);
+    }
+
+    public on(event: LogLevels, listener: (level: LogLevels, message: logMessage, context: string) => void) {
+        if (!this.events.has(event)) this.events.delete(event);
+
+        this.events.set(event, listener);
+
+        return this;
     }
 }
