@@ -1,4 +1,4 @@
-import { Logger } from "../src";
+import { Logger } from '../src';
 
 const logger = new Logger('AppName', {
     logLevels: ['debug', 'error', 'warn', 'verbose', 'log'],
