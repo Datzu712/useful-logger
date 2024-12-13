@@ -1,10 +1,10 @@
-import { logMessage } from './logMessage';
+import { LogMessage } from './logMessage';
 
 export interface AbstractLogger {
-    debug: (message: logMessage, context?: string) => void;
-    error: (message: logMessage, context?: string) => void;
-    warn: (message: logMessage, context?: string) => void;
-    log: (message: logMessage, context?: string) => void;
-    verbose?: (message: logMessage, context?: string) => void;
-    // fatal: (message: logMessage, .context?: string) => void;
+    debug: (...messages: LogMessage) => void;
+    error: (...messages: LogMessage) => void;
+    warn: (...messages: LogMessage) => void;
+    log: (...messages: LogMessage) => void;
+    verbose?: (...messages: LogMessage) => void;
+    http?: (...messages: LogMessage) => void;
 }

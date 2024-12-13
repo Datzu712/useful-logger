@@ -64,12 +64,12 @@ export class ConsoleLogger implements AbstractLogger {
 
     constructor(options?: ConsoleLoggerOptions) {
         this.options = {
-            outputTemplate: options?.outputTemplate || '{timestamp} {pid} {level} {message}',
+            outputTemplate: options?.outputTemplate ?? '{timestamp} {pid} {level} {message}',
             testing: options?.testing ?? false,
-            logLevels: options?.logLevels || ['error', 'warn', 'log', 'verbose'],
+            logLevels: options?.logLevels ?? ['error', 'warn', 'log', 'verbose'],
             allowWriteFiles: options?.allowWriteFiles ?? true,
             allowConsole: options?.allowConsole ?? true,
-            context: options?.context || 'null',
+            context: options?.context ?? 'null',
             folderPath: options?.folderPath,
             indents: {
                 timestamp: options?.indents?.timestamp ?? 0,
@@ -87,7 +87,7 @@ export class ConsoleLogger implements AbstractLogger {
         if (!this.isLevelEnabled(level)) return;
 
         if (this.events.has(level)) {
-            message = this.events.get(level)?.(level, message, context) || message;
+            message = this.events.get(level)?.(level, message, context) ?? message;
         }
 
         if (
@@ -172,11 +172,11 @@ export class ConsoleLogger implements AbstractLogger {
      * @param { string } text - The text to format.
      * @returns { string } Spaces to indent the text.
      */
-    private formatIndentationText = (indent: number, text: string): string => {
+    private formatIndentationText(indent: number, text: string) {
         const textLength = text?.length || 0;
         const indentationLength = Math.max(0, indent - textLength);
         return ' '.repeat(indentationLength);
-    };
+    }
 
     /**
      * Write the log.
@@ -195,6 +195,7 @@ export class ConsoleLogger implements AbstractLogger {
      */
     private createWritableLogStream(level: LogLevels): WriteStream {
         if (!existsSync(this.options.folderPath as string)) mkdirSync(this.options.folderPath as string);
+
         if (this.options.testing) {
             // Path to testing logs folder
             const path = `${this.options.folderPath}/testing`;
@@ -237,7 +238,7 @@ export class ConsoleLogger implements AbstractLogger {
     public getPid(): string {
         return `[${this.options.context ?? 'Application'} - ${process.pid}]`;
     }
-    private formatLevel = (level: LogLevels): string => {
+    private formatLevel(level: LogLevels) {
         const levelColors = {
             error: red,
             warn: yellow,
@@ -249,7 +250,7 @@ export class ConsoleLogger implements AbstractLogger {
 
         const color = levelColors[level] || cyan;
         return `${color}${level.toUpperCase()}${resetColor}`;
-    };
+    }
     public getTimestamp(fullDate = false): string {
         const localeStringOptions: Intl.DateTimeFormatOptions = {
             year: 'numeric',
