@@ -1,4 +1,3 @@
-export * from './abstract-logger';
-export * from './logLevels';
-export * from './logMessage';
-export * from './logMessageKeywords';
+export type * from './logLevels';
+export type * from './logMessageKeywords';
+export type * from './loggerOptions';

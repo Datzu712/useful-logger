@@ -9,7 +9,6 @@ export enum LogLevel {
 }
 
 export type LoglevelOption = {
-    type: LogLevel | string;
     /**
      * @default true
      */

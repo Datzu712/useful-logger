@@ -1,3 +1,3 @@
-export * from './console-logger';
-export * from './interfaces';
-export * from './logger.service';
+export type * from './interfaces';
+
+export { Logger } from './lib/dynamic-console-logger';
